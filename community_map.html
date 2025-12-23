@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Community Map · LagoonLink{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css">
+{% endblock %}
+
+{% block content %}
+  <h2>Community Map</h2>
+  <p>Public dives from the community. Toggle a dive to “Public” on your dashboard to include it here.</p>
+  <div id="map" class="card" style="height:70vh;padding:0;"></div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <script>
+    // World copy jump keeps markers visible when panning across map copies
+    const map = L.map('map', { worldCopyJump: true }).setView([20, 0], 2);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    const cluster = L.markerClusterGroup({ showCoverageOnHover: false });
+    map.addLayer(cluster);
+
+    fetch('{{ url_for("api_public_dives") }}')
+      .then(r => r.json())
+      .then(dives => {
+        if (!dives.length) return;
+        const pts = [];
+        dives.forEach(d => {
+          const ll = [d.lat, d.lon];
+          cluster.addLayer(L.marker(ll).bindPopup(`<b>${d.name}</b><br>${(d.notes||'')}`));
+          pts.push(ll);
+        });
+        if (pts.length === 1) map.setView(pts[0], 10);
+        else map.fitBounds(pts, { padding: [30, 30] });
+      });
+  </script>
+{% endblock %}

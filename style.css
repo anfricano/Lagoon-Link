@@ -1,0 +1,300 @@
+/* =========================
+   LagoonLink – style.css
+   System fonts by default; surfer/reggae are opt-in.
+   ========================= */
+
+/* ---------- Theme tokens ---------- */
+:root{
+  --navy:#063A4B;
+  --teal:#0FB3B6;
+  --coral:#FF6B6B;
+  --bg:#E9FBF6;
+  --card:#FFFFFF;
+
+  --fs-hero: clamp(2.1rem, 1.2rem + 2.2vw, 2.8rem);
+  --fs-h2:   clamp(1.25rem, 0.9rem + 1.2vw, 1.6rem);
+  --fs-body: 1.05rem;
+  --lh-body: 1.55;
+
+  --font-system: -apple-system, system-ui, BlinkMacSystemFont,
+                 "Segoe UI", Roboto, "Helvetica Neue", Arial,
+                 "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+
+  /* surfer/reggae palette */
+  --surf1:#00B3C6;  /* aqua */
+  --surf2:#007A8A;  /* deep teal */
+  --sand:#F5D58A;   /* sand */
+  --rastag:#2CB34A; /* rasta green */
+  --rastay:#F2C200; /* rasta yellow */
+  --rastar:#E84C3D; /* rasta red */
+}
+
+/* ---------- Base page ---------- */
+html, body{
+  font-family: var(--font-system);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  letter-spacing: .2px;
+  background: linear-gradient(180deg,#E9FBF6, #DDF7F2 40%, #D2F1EC);
+  color: #052c39;
+  margin: 0;
+}
+
+/* ---------- Layout ---------- */
+.container{
+  max-width: 1024px;
+  margin: 28px auto;
+  padding: 0 18px;
+}
+
+/* ---------- Cards ---------- */
+.card{
+  background:var(--card);
+  border:1px solid #e9eef1;
+  border-radius:16px;
+  padding: 26px;
+  box-shadow:0 6px 18px rgba(6,58,75,.06);
+}
+
+/* ---------- Headings ---------- */
+h1{ font-size: var(--fs-hero); margin: 0 0 10px; color:var(--navy); }
+h2{ font-size: var(--fs-h2);   margin: 0;        color:var(--navy); }
+
+/* ---------- Buttons ---------- */
+.btn{
+  font-family: var(--font-system);
+  font-size:1rem;
+  padding:11px 16px;
+  border-radius:12px;
+  border:1px solid transparent;
+  cursor:pointer;
+}
+.btn-primary{ background: var(--navy); color:#fff; }
+.btn-accent { background: var(--teal); color:#00353d; }
+.btn-ghost  { background: #fff; border-color:#dbe6ea; color:#123b45; }
+.btn:hover{ transform: translateY(-1px); }
+
+/* ---------- Navbar ---------- */
+.navbar{
+  position: sticky; top: 0; z-index: 10;
+  background: #fff;
+  border-bottom: 1px solid rgba(0,0,0,.06);
+  padding: 8px 0;
+}
+.navbar .inner{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.navbar .logo{ height: 56px; width: auto; display: block; }
+.navbar a, .brand .title{
+  font-family: var(--font-system);
+  font-weight: 600;
+  font-size: 1.12rem;
+  letter-spacing: .2px;
+  color: var(--navy);
+  padding: 8px 10px;
+  line-height: 1.2;
+  text-shadow: 0 1px 0 rgba(255,255,255,.25);
+}
+.navbar a:hover{ transform: translateY(-1px); }
+@media (min-width: 900px){ .navbar a{ font-size: 1.18rem; } }
+
+/* ---------- Nearby spots ---------- */
+.spot{
+  border:1px solid #e7edf1;
+  border-radius:14px;
+  padding:14px 16px;
+  margin:12px 0;
+  background:#fff;
+}
+.spot__title{ display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--navy) }
+.spot__dist{ font-weight: 600; color:#456; }
+.spot__row{ display:flex;gap:12px;flex-wrap:wrap;margin:8px 0 }
+.spot__row span{ background:#f7fbfd;border-radius:12px;padding:7px 10px }
+.spot__notes{ opacity:.9;margin:6px 0 }
+.spot__actions{ display:flex;gap:8px;margin-top:8px }
+
+/* ---------- Topbar (legacy) ---------- */
+.topbar{
+  position: sticky; top:0; z-index:10;
+  background:#fff145;
+  border-bottom:1px solid rgba(0,0,0,.06);
+  height:48px;
+  padding: 14px 18px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.brand{display:flex; align-items:center; gap:12px;}
+.brand img{height:44px; width:auto;}
+.brand .title{ font-weight:600; font-size:1.20rem; color:var(--navy); }
+.topnav a{ font-size:1.02rem; padding:10px 12px; }
+
+
+@font-face{
+  font-family: "KnewaveLocal";
+  src: url("/static/Fonts/Knewave/knewave-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+h1.surfer{
+  font-family: "KnewaveLocal", "Avenir Next", Avenir, "Gill Sans",
+               -apple-system, system-ui, "Helvetica Neue", Arial, sans-serif !important;
+  font-weight: 400 !important;
+  letter-spacing: .2px !important;
+  line-height: 1.04 !important;
+}
+
+/* ========= Self-hosted font faces ========= */
+@font-face{
+  font-family: "OriginalSurferLocal";
+  src: url("/static/Fonts/Original_Surfer/OriginalSurfer-regular.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face{
+  font-family: "KnewaveLocal";
+  src: url("/static/Fonts/Knewave/knewave-regular.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+
+/* ========= Assignments (SWAPPED) ========= */
+/* 1) General text uses Original Surfer */
+html, body {
+  font-family: "OriginalSurferLocal", -apple-system, system-ui, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+/* 2) Navbar tabs/links use Knewave */
+.navbar a {
+  font-family: "KnewaveLocal", -apple-system, system-ui, "Helvetica Neue", Arial, sans-serif !important;
+  letter-spacing: .2px;
+}
+
+/* 3) Exception: Hero keeps Knewave */
+h1.surfer {
+  font-family: "KnewaveLocal", -apple-system, system-ui, "Helvetica Neue", Arial, sans-serif !important;
+  font-weight: 400 !important;
+  letter-spacing: .2px !important;
+  line-height: 1.04 !important;
+}
+
+/* (If you use the gradient class, keep it working) */
+h1.surfer.vibe-surf-gradient{
+  background: linear-gradient(180deg, var(--surf1,#00B3C6), var(--surf2,#007A8A));
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+
+/* Clickable HTML logo */
+.logo-link{
+  display:inline-block;
+  width:220px;     /* ← set to your logo width */
+  height:44px;     /* ← set to your logo height */
+  line-height:0;   /* kill inline gap */
+}
+.logo-frame{
+  width:100%;
+  height:100%;
+  border:0;
+  display:block;
+  background:transparent;
+  /* Important: let clicks pass through the iframe so the <a> works */
+  pointer-events:none;
+}
+
+/* === LagoonLink polish (logo + nav + headings) === */
+
+/* 1) Logo iframe: tidy size/alignment */
+.navbar .inner { align-items: center; padding-block: 8px; }
+.logo-link {
+  width: 240px;   /* adjust if needed: 220–280 works well */
+  height: 54px;   /* slightly shorter so the wave doesn't clip the top */
+}
+.logo-frame { display: block; width: 100%; height: 100%; border: 0; background: transparent; }
+
+/* 2) Nav links: spacing + Original Surfer */
+.navbar .inner > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: 18px;                 /* replaces those middot separators visually */
+  /* If you want to keep the · characters in HTML, keep them;
+     this spacing just makes things look balanced. */
+}
+.navbar .inner > div:last-child a {
+  font-family: "OriginalSurferLocal", "Original Surfer", "Knewave", -apple-system, system-ui, sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+}
+.navbar .inner > div:last-child a:hover { text-decoration: underline; }
+
+/* 3) Headings: keep the hero bold but readable */
+.card h1 {
+  letter-spacing: 0.2px;
+  line-height: 1.06;
+  margin-top: 2px;           /* brings the headline a hair closer to the card top */
+}
+
+/* Optional: section titles pop just a bit more */
+.card h2 {
+  letter-spacing: 0.2px;
+  line-height: 1.08;
+}
+
+/* === LagoonLink polish (logo + nav + headings) === */
+
+/* 1) Logo iframe: tidy size/alignment */
+.navbar .inner { align-items: center; padding-block: 8px; }
+.logo-link {
+  width: 240px;   /* adjust if needed: 220–280 works well */
+  height: 54px;   /* slightly shorter so the wave doesn't clip the top */
+}
+.logo-frame { display: block; width: 100%; height: 100%; border: 0; background: transparent; }
+
+/* 2) Nav links: spacing + Original Surfer */
+.navbar .inner > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: 18px;                 /* replaces those middot separators visually */
+  /* If you want to keep the · characters in HTML, keep them;
+     this spacing just makes things look balanced. */
+}
+.navbar .inner > div:last-child a {
+  font-family: "OriginalSurferLocal", "Original Surfer", "Knewave", -apple-system, system-ui, sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+}
+.navbar .inner > div:last-child a:hover { text-decoration: underline; }
+
+/* 3) Headings: keep the hero bold but readable */
+.card h1 {
+  letter-spacing: 0.2px;
+  line-height: 1.06;
+  margin-top: 2px;           /* brings the headline a hair closer to the card top */
+}
+
+/* Optional: section titles pop just a bit more */
+.card h2 {
+  letter-spacing: 0.2px;
+  line-height: 1.08;
+}
+
+/* Shrink header logo */
+.logo-link { width: 200px; height: 48px; }
+
+/* Optional: even smaller on narrow screens */
+@media (max-width: 900px){
+  .logo-link { width: 180px; height: 42px; }
+}
+@media (max-width: 600px){
+  .logo-link { width: 160px; height: 38px; }
+}
+
+

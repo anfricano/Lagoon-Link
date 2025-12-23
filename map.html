@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}My Map · LagoonLink{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+{% endblock %}
+
+{% block content %}
+  <h2>My Map</h2>
+  <p>Your private dive markers are shown. Make a dive public from the dashboard if you want it on Community.</p>
+  <div id="map" class="card" style="height:70vh;padding:0;"></div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Initialize map with worldCopyJump so markers stay visible when panning across copies
+    const map = L.map('map', {
+      zoomControl: true,
+      worldCopyJump: true
+    }).setView([41.5, -71.3], 7);
+
+    // Base tiles (keep wrap enabled; do NOT set noWrap:true)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    // Load and plot your dives
+    fetch('{{ url_for("api_my_dives") }}')
+      .then(r => r.json())
+      .then(dives => {
+        if (!dives.length) return;
+        const latlngs = [];
+        dives.forEach(d => {
+          const ll = [d.lat, d.lon];
+          L.marker(ll).addTo(map).bindPopup(`<b>${d.name}</b><br>${d.notes || ''}`);
+          latlngs.push(ll);
+        });
+        // Fit bounds or center on the single marker
+        if (latlngs.length === 1) {
+          map.setView(latlngs[0], 12);
+        } else {
+          map.fitBounds(latlngs, { padding: [30, 30] });
+        }
+      });
+  </script>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Error · LagoonLink{% endblock %}
+{% block content %}
+  <div class="card">
+    <h2>Something went wrong</h2>
+    <p>{{ err }}</p>
+    <p><small>Check your terminal for the full traceback.</small></p>
+  </div>
+{% endblock %}

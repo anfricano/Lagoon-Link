@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="300" viewBox="0 0 1500 300">
+  <defs>
+    <style>
+      /* Brand + waves */
+      .brand { font: 900 122px "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif; fill:#10A9B7 }
+      .wave1 { fill:none; stroke:#12D0C0; stroke-width:14; stroke-linecap:round }
+      .wave2 { fill:none; stroke:#4F2DA9; stroke-width:10; stroke-linecap:round; opacity:.6 }
+
+      /* Palm + beach */
+      .trunk { fill:#8B5E3C }        /* brown trunk */
+      .leaf  { fill:#2EAC6D }        /* green canopy */
+      .rib   { fill:none; stroke:#1E8655; stroke-width:2; opacity:.6 }
+      .sand  { fill:#EED9B6 }        /* sand/tan beach */
+      .shade { fill:#D9C6A7; opacity:.55 }
+    </style>
+  </defs>
+
+  <!-- Wordmark -->
+  <text x="260" y="165" class="brand">Lagoon Link</text>
+
+  <!-- PALM + BEACH to the LEFT of the "L" (no overlap) -->
+  <g transform="translate(210,36)">
+    <!-- Beach -->
+    <path class="sand" d="M-40,150 C20,130 110,130 170,150 C146,162 4,162 -40,150 Z"></path>
+    <path class="shade" d="M-20,156 C30,144 100,144 150,156 C130,162 0,162 -20,156 Z"></path>
+
+    <!-- Longer/thicker trunk, raised another 8px (total -12), still behind leaves -->
+    <g transform="translate(6,-12) scale(1.16,1.20)">
+      <path class="trunk" d="M38,44 c-3,36 -5,60 -7,92 h16 c-2,-32 -4,-56 -7,-92 z"></path>
+    </g>
+
+    <!-- Leaves (raised so L top is visible), trimmed so they stop before the L -->
+    <g transform="translate(0,-18)">
+      <path class="leaf" d="M26,30
+        c-44,6 -64,24 -64,24
+        c38,-7 64,-5 96,5
+        c30,-10 54,-12 84,-6
+        c0,0 -18,-18 -64,-23
+        c-22,-2 -36,-2 -52,0 z"></path>
+      <path class="rib" d="M64,64 c-12,-7 -24,-11 -36,-13"></path>
+      <path class="rib" d="M20,60 c10,-5 22,-9 36,-11"></path>
+      <path class="rib" d="M88,60 c-12,-5 -26,-9 -40,-11"></path>
+    </g>
+  </g>
+
+  <!-- Double baseline waves aligned to island's left edge (~x = 210 - 40 = 170) -->
+  <path class="wave1" d="M170,210
+    c100,40 200,-40 300,0
+    c100,40 200,-40 300,0
+    c100,40 200,-40 300,0
+    c100,40 200,-40 300,0"></path>
+  <path class="wave2" d="M170,234
+    c100,40 200,-40 300,0
+    c100,40 200,-40 300,0
+    c100,40 200,-40 300,0
+    c100,40 200,-40 300,0"></path>
+</svg>

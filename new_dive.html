@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Add a Dive · LagoonLink{% endblock %}
+{% block content %}
+
+<h2>Add a Dive</h2>
+
+<div class="card" style="max-width:700px;margin:16px 0;">
+  <form method="post">
+    <div class="form-grid">
+      <label>Name
+        <input class="input" type="text" name="name" placeholder="Ft. Wetherill East Wall"/>
+      </label>
+
+      <label>Latitude
+        <input class="input" type="number" name="lat" step="0.000001" required/>
+      </label>
+
+      <label>Longitude
+        <input class="input" type="number" name="lon" step="0.000001" required/>
+      </label>
+
+      <label>Depth (ft)
+        <input class="input" type="number" name="depth_ft" min="0" />
+      </label>
+
+      <label>Duration (min)
+        <input class="input" type="number" name="duration_min" min="0" />
+      </label>
+
+      <label>Visibility (ft)
+        <input class="input" type="number" name="vis_ft" min="0" />
+      </label>
+
+      <label>Water Temperature (°F)
+        <input class="input" type="number" name="water_temp_f" min="0" max="100" />
+      </label>
+
+      <label>Notes
+        <input class="input" type="text" name="notes" placeholder="Conditions, buddy, suit, etc." />
+      </label>
+
+      <label class="checkbox" style="grid-column: 1 / -1; display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" name="is_public" /> Public (included on Community)
+      </label>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:12px;">
+      <button class="btn btn-ghost" type="button" id="useLoc">Use my location</button>
+      <button class="btn btn-primary" type="submit">Save Dive</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Fill lat/lon from browser geolocation
+  document.getElementById('useLoc').onclick = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation not supported by your browser.');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      p => {
+        const { latitude, longitude } = p.coords;
+        document.querySelector('input[name="lat"]').value = latitude.toFixed(6);
+        document.querySelector('input[name="lon"]').value = longitude.toFixed(6);
+      },
+      err => alert('Location error: ' + err.message),
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+    );
+  };
+</script>
+
+{% endblock %}

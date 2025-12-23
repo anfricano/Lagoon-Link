@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+{% block title %}LagoonLink · Home{% endblock %}
+{% block content %}
+
+<!-- Hero / intro card -->
+<div class="card">
+  <h1 class="surfer vibe-surf vibe-surf-gradient">Welcome to Lagoon Link</h1>
+
+  <p>Log your dives, see them on your map, and explore nearby spots with live conditions.</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;">
+    <a class="btn btn-primary" href="{{ url_for('dives_new') }}">Log a dive</a>
+    <a class="btn btn-ghost" href="{{ url_for('map_page') }}">View my map</a>
+    <a class="btn btn-accent" href="{{ community_url }}">Community</a>
+  </div>
+</div>
+
+<!-- Nearby section -->
+<div class="card" style="margin-top:14px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+    <h2 style="margin:0;">Dive spots near you</h2>
+    <button class="btn btn-ghost" id="nearbyBtn">Use my location</button>
+  </div>
+
+  <div id="nearbyList" style="margin-top:10px;"></div>
+  <div id="nearbyHint" style="opacity:.8;margin-top:6px;">
+    Click “Use my location” to load nearby public dives.
+  </div>
+</div>
+
+<!-- Tide Chart Card -->
+<div class="card tide-card" style="margin-top:16px">
+  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;">
+    <h2 style="margin:0">Local Tide (next 36h)</h2>
+    <small id="tideStationLabel" style="opacity:.75">Locating station…</small>
+  </div>
+
+  <!-- Fixed-height wrapper so the canvas doesn't stretch -->
+  <div class="tide-canvas-wrap"><canvas id="tideChart"></canvas></div>
+  <style>
+    .tide-canvas-wrap { position:relative; height:280px; max-height:60vh; }
+    #tideChart { display:block; width:100% !important; height:100% !important; }
+  </style>
+
+
+  <div id="tideLegend" style="margin-top:8px;font-size:12px;opacity:.8">
+    Units: feet (MLLW). High/Low markers shown.
+  </div>
+
+  <!-- Scoped styles (only affect this card) -->
+  <style>
+    .tide-card { padding:16px; border:1px solid #e5e7eb; border-radius:12px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.04); }
+    .tide-canvas-wrap { position:relative; height:280px; max-height:60vh; }
+    #tideChart { display:block; width:100% !important; height:100% !important; }
+  </style>
+</div>
+
+<!-- Chart.js (CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<script>
+(function () {
+  const canvas = document.getElementById("tideChart");
+  const labelEl = document.getElementById("tideStationLabel");
+  let tideChartInstance = null;
+
+  // --- helpers ---
+  function toLocalLabel(iso) {
+    // NOAA returns "YYYY-MM-DD HH:MM" (UTC). Make it ISO + Z for Safari.
+    const d = new Date(iso.replace(" ", "T") + "Z");
+    return d.toLocaleString([], { month:"short", day:"numeric", hour:"numeric", minute:"2-digit" });
+  }
+
+  async function fetchJSON(url, {timeoutMs=12000} = {}) {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), timeoutMs);
+    try {
+      const r = await fetch(url, {signal: ctl.signal});
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return await r.json();
+    } finally {
+      clearTimeout(t);
+    }
+  }
+
+  async function getTides() {
+    // 1) try geolocated station (capped radius)
+    let qs = "";
+    try {
+      const pos = await new Promise((resolve, reject) => {
+        if (!navigator.geolocation) return reject(new Error("no-geo"));
+        navigator.geolocation.getCurrentPosition(resolve, reject, {enableHighAccuracy:true, timeout:7000});
+      });
+      qs = `?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`;
+    } catch (_) {
+      qs = ""; // fall through to default
+    }
+
+    try {
+      const url = `/api/tides${qs ? qs + '&max_km=250' : '?max_km=250'}`;
+      const data = await fetchJSON(url);
+      if (Array.isArray(data.series) && data.series.length) return data;
+      // If we got an empty series (rare), force fallback
+      console.warn("tides: empty series from geo/default, falling back");
+      return await fetchJSON(`/api/tides?station=8452660`);
+    } catch (e) {
+      console.warn("tides: geo/default failed", e);
+      // 2) hard fallback to Newport, RI
+      return await fetchJSON(`/api/tides?station=8452660`);
+    }
+  }
+
+  // High/Low dots + labels
+  const hiloPlugin = {
+    id: "hiloPlugin",
+    afterDatasetsDraw(chart, _args, opts) {
+      const { hilo = [], series = [] } = opts || {};
+      if (!hilo.length || !series.length) return;
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      ctx.save();
+      ctx.font = "11px system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
+      ctx.textAlign = "left";
+      hilo.forEach(h => {
+        const idx = series.findIndex(p => p.t === h.t);
+        if (idx < 0 || !meta.data[idx]) return;
+        const pt = meta.data[idx].getProps(["x","y"], true);
+        ctx.beginPath(); ctx.arc(pt.x, pt.y, 3, 0, 2*Math.PI); ctx.fill();
+        ctx.fillText(`${h.type} ${Number(h.v).toFixed(2)} ft`, pt.x + 6, pt.y - 6);
+      });
+      ctx.restore();
+    }
+  };
+
+  function buildChart(ctx, data) {
+    const xs = data.series.map(p => toLocalLabel(p.t));
+    const ys = data.series.map(p => Number(p.v)).filter(Number.isFinite);
+    if (!xs.length || !ys.length) {
+      labelEl.textContent = "No tide points";
+      return;
+    }
+    const yMin = Math.min(...ys), yMax = Math.max(...ys), pad = Math.max(0.2, (yMax - yMin) * 0.1);
+    if (tideChartInstance) tideChartInstance.destroy();
+    tideChartInstance = new Chart(ctx, {
+      type: "line",
+      data: { labels: xs, datasets: [{ label: "Tide level (ft)", data: ys, tension: 0.35, pointRadius: 0, borderWidth: 3 }] },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { intersect: false, mode: "index" },
+        scales: {
+          x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
+          y: { title: { display: true, text: "ft (MLLW)" }, min: yMin - pad, max: yMax + pad, grace: 0 }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: (c) => ` ${c.parsed.y.toFixed(2)} ft` } },
+          hiloPlugin: { hilo: data.hilo || [], series: data.series }
+        }
+      },
+      plugins: [hiloPlugin]
+    });
+  }
+
+  // --- init ---
+  (async function init() {
+    try {
+      const data = await getTides();
+      labelEl.textContent = `${data.station.name}${data.station.state ? ", " + data.station.state : ""}`;
+      buildChart(canvas, data);
+    } catch (e) {
+      console.error(e);
+      labelEl.textContent = "Tide data unavailable";
+    }
+  })();
+})();
+</script>
+
+
+
+<!-- Nearby spots JS -->
+<script>
+(function(){
+  const btn  = document.getElementById('nearbyBtn');
+  const list = document.getElementById('nearbyList');
+  const hint = document.getElementById('nearbyHint');
+
+  function cardHTML(s) {
+    const live = s.live || {};
+    const wind  = (live.wind_speed_kt != null) ? `${live.wind_speed_kt} kt` : '—';
+    const wdir  = (live.wind_dir != null) ? `${live.wind_dir}°` : '—';
+    const wave  = (live.wave_height_m != null) ? `${Number(live.wave_height_m).toFixed(1)} m` : '—';
+    const wpd   = (live.wave_period_s != null) ? `${live.wave_period_s}s` : '—';
+    const wdir2 = (live.wave_dir != null) ? `${live.wave_dir}°` : '—';
+    const sst   = (live.sst_c != null) ? `${Number(live.sst_c).toFixed(1)} °C` : '—';
+    const dist  = (s.distance_km != null) ? `${Number(s.distance_km).toFixed(1)} km` : '';
+
+    return `
+      <div class="spot">
+        <div class="spot__title">
+          <strong>${s.name}</strong>
+          <span class="spot__dist">${dist}</span>
+        </div>
+        <div class="spot__row">
+          <span><b>Wind:</b> ${wind} @ ${wdir}</span>
+          <span><b>Waves:</b> ${wave} / ${wpd} @ ${wdir2}</span>
+          <span><b>SST:</b> ${sst}</span>
+        </div>
+        ${s.notes ? `<div class="spot__notes">${s.notes}</div>` : ''}
+        <div class="spot__actions">
+          <a class="btn btn-ghost" href="https://www.openstreetmap.org/?mlat=${s.lat}&mlon=${s.lon}#map=12/${s.lat}/${s.lon}" target="_blank">Open Map</a>
+          <a class="btn btn-ghost" href="{{ community_url }}">Community</a>
+          <a class="btn btn-surfer" href="{{ url_for('dives_new') }}">Log a dive</a>
+        </div>
+      </div>
+    `;
+  }
+
+  function render(spots){
+    if (!spots || !spots.length) {
+      list.innerHTML = `<p>No public dives nearby. Make one public from your dashboard and try again.</p>`;
+      return;
+    }
+    hint.textContent = "Live stats via Open-Meteo Marine (updated ~15 min).";
+    list.innerHTML = spots.map(cardHTML).join("");
+  }
+
+  btn.addEventListener('click', () => {
+    if (!navigator.geolocation) { alert("Geolocation not supported."); return; }
+    btn.disabled = true; btn.textContent = "Locating…";
+    navigator.geolocation.getCurrentPosition(
+      p => {
+        const { latitude, longitude } = p.coords;
+        fetch(`/api/nearby_spots?lat=${latitude}&lon=${longitude}`)
+          .then(r => r.json()).then(render)
+          .catch(() => alert("Failed to load nearby spots."))
+          .finally(() => { btn.disabled = false; btn.textContent = "Use my location"; });
+      },
+      err => { alert("Location error: " + err.message); btn.disabled = false; btn.textContent = "Use my location"; },
+      { enableHighAccuracy:true, timeout:8000, maximumAge:0 }
+    );
+  });
+})();
+</script>
+
+<style>
+/* Roomier nearby cards */
+.spot { border:1px solid #e7edf1; border-radius:14px; padding:14px 16px; margin:12px 0; background:#fff; }
+.spot__title { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; color:var(--navy); }
+.spot__dist { font-weight:600; color:#456; }
+.spot__row { display:flex; gap:12px; flex-wrap:wrap; margin:8px 0; }
+.spot__row span { background:#f7fbfd; border-radius:12px; padding:7px 10px; }
+.spot__notes { opacity:.9; margin:6px 0; }
+.spot__actions { display:flex; gap:8px; margin-top:8px; }
+</style>
+
+{% endblock %}

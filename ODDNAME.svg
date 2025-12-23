@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="120" viewBox="0 0 480 120">
+  <defs>
+    <linearGradient id="bdg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#136F99"></stop>
+      <stop offset="1" stop-color="#1FB7A6"></stop>
+    </linearGradient>
+  </defs>
+  <!-- Wordmark -->
+  <g transform="translate(20,28)">
+    <text x="0" y="40" font-family="Poppins, Inter, Arial, sans-serif" font-size="48" font-weight="700" fill="#08324A" letter-spacing="0.5">
+      Blue
+    </text>
+    <text x="120" y="40" font-family="Poppins, Inter, Arial, sans-serif" font-size="48" font-weight="700" fill="url(#bdg)" letter-spacing="0.5">
+      Dive
+    </text>
+    <!-- Pin dot over the i -->
+    <g transform="translate(208, -4)">
+      <path d="M12 0c6.6 0 12 5.3 12 12c0 8.6-12 22-12 22S0 20.6 0 12C0 5.3 5.4 0 12 0z" fill="#FF6B6B"></path>
+      <circle cx="12" cy="12" r="5" fill="white"></circle>
+    </g>
+    <!-- Wave underline -->
+    <path d="M0 60 C 60 80, 110 40, 180 60 S 300 80, 360 60" fill="none" stroke="url(#bdg)" stroke-width="6" stroke-linecap="round"></path>
+  </g>
+</svg>

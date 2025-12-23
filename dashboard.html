@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Dashboard</h2>
+  <p><a class="btn" href="{{ url_for('dives_new') }}">Add a Dive</a></p>
+  {% if dives %}
+    <table class="table">
+      <thead>
+        <tr><th>When</th><th>Name</th><th>Lat</th><th>Lon</th><th>Depth(ft)</th><th>Duration</th><th>Vis(ft)</th><th>Public?</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for d in dives %}
+        <tr>
+          <td>{{ d.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>{{ d.name }}</td>
+          <td>{{ '%.5f'|format(d.lat) }}</td>
+          <td>{{ '%.5f'|format(d.lon) }}</td>
+          <td>{{ d.depth_ft or '' }}</td>
+          <td>{{ d.duration_min or '' }}</td>
+          <td>{{ d.vis_ft or '' }}</td>
+          <td>{{ 'Yes' if d.is_public else 'No' }}</td>
+          <td>
+            <form method="post" action="{{ url_for('toggle_public', dive_id=d.id) }}">
+              <button class="btn btn-xs" type="submit">Toggle</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No dives yet.</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Lagoon Link — Logo</title>
+  <style>
+    /* Reset + transparent bg so it blends into the site header */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: transparent;
+    }
+
+    /* Use the self-hosted Knewave inside /static/Fonts/Knewave/ */
+    @font-face {
+      font-family: "KnewaveLocal";
+      src: url("Fonts/Knewave/knewave-regular.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* Make the SVG fill the iframe cleanly */
+    svg { width: 100%; height: 100%; display: block; }
+
+    .brand { font: 900 122px "KnewaveLocal", cursive; fill:#10A9B7; }
+    .wave1 { fill:none; stroke:#12D0C0; stroke-width:14; stroke-linecap:round }
+    .wave2 { fill:none; stroke:#4F2DA9; stroke-width:10; stroke-linecap:round; opacity:.6 }
+    .trunk { fill:#8B5E3C } .leaf{fill:#2EAC6D} .rib{fill:none;stroke:#1E8655;stroke-width:2;opacity:.6}
+    .sand{fill:#EED9B6} .shade{fill:#D9C6A7;opacity:.55}
+  </style>
+</head>
+<body>
+
+<!-- Keep a consistent, tight viewBox; the SVG scales to the iframe size -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 300" preserveAspectRatio="xMinYMid meet">
+  <text x="260" y="165" class="brand">Lagoon Link</text>
+
+  <g transform="translate(210,36)">
+    <path class="sand"  d="M-40,150 C20,130 110,130 170,150 C146,162 4,162 -40,150 Z"/>
+    <path class="shade" d="M-20,156 C30,144 100,144 150,156 C130,162 0,162 -20,156 Z"/>
+    <g transform="translate(6,-12) scale(1.16,1.20)">
+      <path class="trunk" d="M38,44 c-3,36 -5,60 -7,92 h16 c-2,-32 -4,-56 -7,-92 z"/>
+    </g>
+    <g transform="translate(0,-18)">
+      <path class="leaf" d="M26,30
+        c-44,6 -64,24 -64,24
+        c38,-7 64,-5 96,5
+        c30,-10 54,-12 84,-6
+        c0,0 -18,-18 -64,-23
+        c-22,-2 -36,-2 -52,0 z"/>
+      <path class="rib" d="M64,64 c-12,-7 -24,-11 -36,-13"/>
+      <path class="rib" d="M20,60 c10,-5 22,-9 36,-11"/>
+      <path class="rib" d="M88,60 c-12,-5 -26,-9 -40,-11"/>
+    </g>
+  </g>
+
+  <path class="wave1" d="M170,210
+    c100,40 200,-40 300,0
+    c100,40 200,-40 300,0
+    c100,40 200,-40 300,0
+    c100,40 200,-40 300,0"/>
+  <path class="wave2" d="M170,234
+    c100,40 200,-40 300,0
+    c100,40 200,-40 300,0
+    c100,40 200,-40 300,0
+    c100,40 200,-40 300,0"/>
+</svg>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Not found · LagoonLink{% endblock %}
+{% block content %}
+  <div class="card">
+    <h2>Not found</h2>
+    <p>The page you’re looking for doesn’t exist.</p>
+    <a class="btn btn-primary" href="{{ url_for('index') }}">Go home</a>
+  </div>
+{% endblock %}

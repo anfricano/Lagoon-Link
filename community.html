@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Community Feed (Public Dives)</h2>
+  {% if dives %}
+    <ul class="list">
+      {% for d in dives %}
+        <li>
+          <div><b>{{ d.name }}</b> — {{ d.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+          <div class="muted small">({{ '%.5f'|format(d.lat) }}, {{ '%.5f'|format(d.lon) }}) • {{ d.vis_ft or '?' }} ft vis • {{ d.duration_min or '?' }} min</div>
+          {% if d.notes %}<div>{{ d.notes }}</div>{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No public dives yet.</p>
+  {% endif %}
+{% endblock %}
