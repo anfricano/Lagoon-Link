@@ -85,6 +85,12 @@ class Dive(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
 
 
+# Create database tables on startup for Render/simple deployment
+with app.app_context():
+    db.create_all()
+
+
+
 # ------------------------ Template Globals ------------------------
 @app.context_processor
 def inject_globals():
@@ -597,3 +603,7 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True, use_reloader=False)
+
+
+
+
